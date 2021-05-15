@@ -511,6 +511,129 @@ Result:
 
 ![image](https://user-images.githubusercontent.com/49611937/118379569-85c05c00-b605-11eb-8a3f-9724d04214ed.png)
 
+---
+### 20. Hexbin plot
+cocok untuk data yang sangat besar
+```python
+import matplotlib.pyplot as plt
+plt.clf()
+
+plt.figure()
+df.plot.hexbin(x='Pendapatan', y='Total', gridsize=25, rot=90)
+plt.tight_layout()
+plt.show()
+```
+Result:
+
+![image](https://user-images.githubusercontent.com/49611937/118379669-32024280-b606-11eb-87a0-eec058413812.png)
+
+---
+### 21. Scatter Matrix plot
+- cocok untuk data yang tidak terlalu besar
+- untuk melihat hubungan antar variabel
+- **diagonal** dari scatter matriks **adalah histogram** dari masing-masing variabel sedangkan **sisanya adalah scatter plot** dari beberapa pasang variabel
+
+```python
+import matplotlib.pyplot as plt
+from pandas.plotting import scatter_matrix
+
+_, ax = plt.subplots(1,1, figsize=(10,10))
+scatter_matrix(df, ax=ax)
+plt.show()
+```
+Result:
+
+![image](https://user-images.githubusercontent.com/49611937/118379910-7c84be80-b608-11eb-9ea8-2699365e273c.png)
+
+---
+### 22. Density plot dari Scatter Matrix
+Menambahkan **kde** di scatter matrix
+```python
+import matplotlib.pyplot as plt
+from pandas.plotting import scatter_matrix
+
+_, ax = plt.subplots(1,1, figsize=(10,10))
+scatter_matrix(df, diagonal='kde', ax=ax)
+plt.show()
+```
+Result:
+
+![image](https://user-images.githubusercontent.com/49611937/118380063-6cb9aa00-b609-11eb-9792-5b7557cf57ad.png)
+
+---
+### 23. Regresi Linear sederhana (BIVARIAT)
+1 variabel dependen dan 1 variabel independen. Menggunkan **import statsmodel.api as sm**. Rumusnya adalah:
+
+![image](https://user-images.githubusercontent.com/49611937/118380121-b30f0900-b609-11eb-9300-be78d87cf880.png)
+
+![image](https://user-images.githubusercontent.com/49611937/118380132-c15d2500-b609-11eb-925e-ab4b3fefe9c2.png)
+
+![image](https://user-images.githubusercontent.com/49611937/118380157-e487d480-b609-11eb-88d1-6bf2d1b72ef5.png)
+
+Misalnya:
+- variabel independen (bebas)   = df['Pendapatan']   : menggunakan method **sm.add_constant(**
+- variabel dependen (tak bebas) = df['Total']
+
+Kemudian menggunakan method **sm.OLS** (Ordinary Least Square) untuk membuat **model regresi linier sederhana** dengan memasukkan parameter:
+- endog = variabel_tak_bebas
+- exog=variabel_bebas
+- disambung dengan method **.fit()**
+
+Untuk melihat hasil dari model, dapat menggunakan method **.summary()**
+
+```python
+import pandas as pd
+import statsmodel.api as sm
+
+df=pd.read_csv('https://storage.googleapis.com/dqlab-dataset/dataset_statistic.csv', sep=';')
+X = sm.add_constant(df['Pendapatan'])
+y = df['Total']
+
+# Model regresi linear sederhana
+model = sm.OLS(endog=y, exog=X).fit()
+
+model.summary()
+```
+Result:
+
+![image](https://user-images.githubusercontent.com/49611937/118380366-63314180-b60b-11eb-9bf7-6b90863bbe7e.png)
+
+- **coef** : Slope dari model
+- **const** : (atau konstan) **Nilai intercept pada model**. Jika nilai koefisien sama dengan nol, maka nilai variabel tak bebas akan sama dengan nilai konstan
+- **std err** : Nilai kesalahan baku (standard error) dari koefisien tersebut
+- **p-value** : Untuk memastikan bahwa **koefisien variabel bebas memiliki pengaruh signifikan atau tidak** untuk menjelaskan variasi pada model. Jika p-value=0.006 dan ![image](https://user-images.githubusercontent.com/49611937/118380500-6678fd00-b60c-11eb-8d2b-bf9f2c8de83a.png), maka koefisien yang diperoleh **signifikan** untuk model ini.
+
+- **t-statistics** : Nilai yang diperoleh dengan membagi nilai koefisien dengan nilai kesalahan baku
+
+ ![image](https://user-images.githubusercontent.com/49611937/118380421-c28f5180-b60b-11eb-941f-18490c1c4b3a.png)
+
+ ![image](https://user-images.githubusercontent.com/49611937/118380426-ccb15000-b60b-11eb-9967-c3a405080b69.png)
+
+---
+### 24. R-Squared
+Semakin besar nilainya atau semakin mendekati 1, semakin baik modelnya.
+
+![image](https://user-images.githubusercontent.com/49611937/118380549-d5565600-b60c-11eb-84b7-7efa65126020.png)
+
+Misal R-Squared=  0.342, maka persentase perubahan variabel dependen 'Total' yang dijelaskan oleh variabel independen 'Pendapatan' sebesar 34.2%. 65,8% sisanya dipengaruhi oleh faktor-faktor lain yang tidak termasuk di dalam model.
+
+---
+### 25. Homoscedasticity vs Heteroscedasticity
+- Agar model regresi valid, maka residual dari model harus berdistribusi normal (**skew** mendekati atau = 0)
+- Harus Homoscedasticity : kondisi dimana variansi dari error seragam (tidak heteroscedasticity = semakin membesar atau mengecil). Bisa dilihat dari **nilai Durbin-Watson**. Jika nilai Durbin-Watson **di antara nilai 1 dan 2** maka model **homoscedasticity**. Misal: nilai Durbin-Watson 2.510 = tidak homoscedasticity = **model tidak valid**
+
+![image](https://user-images.githubusercontent.com/49611937/118380649-9674d000-b60d-11eb-9e6b-bf1913c1c215.png)
+
+---
+### 26. Uji Asumsi Klasik
+- uji multikolinearitas
+- uji heteroskedastisitas
+- uji normalitas
+- uji autokorelasi
+- uji linearitas
+
+
+
 
 
 
